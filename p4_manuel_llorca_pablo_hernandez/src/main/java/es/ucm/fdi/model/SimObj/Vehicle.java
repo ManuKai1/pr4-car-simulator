@@ -1,18 +1,17 @@
 package es.ucm.fdi.model.SimObj;
 
 public class Vehicle extends SimObject {
-	final private String REPORT = "[vehicle_report]";
+	private final String REPORT_TITLE = "[vehicle_report]";
 	
-	private int maxSpeed;
-	private int actualSpeed;
+	// private arraylist de Junction (itinerario)
 	private Road road;
 	private int location;
+	private int actualSpeed;
+	private int maxSpeed;
 	private int kilometrage;
-	// private arraylist de Junction
 	private int breakdownTime;
-	
 	private boolean hasArrived;
-	private boolean isWaiting;
+	private boolean isWaiting;	
 
 	@Override
 	public void proceed() {
@@ -33,6 +32,28 @@ public class Vehicle extends SimObject {
 		
 	}
 	
+	@Override
+	public String getReport(int simTime) {
+		String info = "";
+		
+		info += REPORT_TITLE + '\n';
+		info += "id = " + id + '\n';
+		info += "time = " + simTime + '\n';
+		info += "speed = " + actualSpeed + '\n';
+		info += "kilometrage = " + kilometrage + '\n';
+		info += "faulty = " + breakdownTime + '\n';
+		info += "location = ";
+		
+		if(hasArrived) {
+			info += "arrived";
+		}
+		else {
+			info += '(' + road.getID() + ", " + location + ')';
+		}
+		info += '\n';
+		return info;
+	}
+	
 	public void moveToNextRoad() {
 		//Función de búsqueda de carreteras que salen de nuestro cruce actual.
 		//Sobre ellas, función de búsqueda de nuestro cruce deseado.
@@ -49,34 +70,13 @@ public class Vehicle extends SimObject {
 	}	
 	
 	public void setActualSpeed(int newActualSpeed)	{
-		if(newActualSpeed > maxSpeed){
+		if(newActualSpeed > maxSpeed) {
 			actualSpeed = maxSpeed;
 		}
-		else{
+		else {
 			actualSpeed = newActualSpeed;
 		}
 	}	
-
-	@Override
-	public String getReport(int simTime) {
-		String info = "";
-		
-		info += REPORT + '\n';
-		info += "id = " + id + '\n';
-		info += "time = " + simTime + '\n';
-		info += "speed = " + actualSpeed + '\n';
-		info += "kilometrage = " + kilometrage + '\n';
-		info += "faulty = " + breakdownTime + '\n';
-		info += "location = ";
-		if(hasArrived){
-			info += "arrived";
-		}
-		else{
-			info += '(' + road.getID() + ", " + location + ')';
-		}
-		info += '\n';
-		return info;
-	}
 }
 
 
