@@ -1,9 +1,11 @@
 package es.ucm.fdi.model.SimObj;
 
+import java.util.ArrayList;
+
 public class Vehicle extends SimObject {
 	private final String REPORT_TITLE = "[vehicle_report]";
 	
-	// private arraylist de Junction (itinerario)
+	private ArrayList<Junction> trip;
 	private Road road;
 	private int location;
 	private int actualSpeed;
@@ -13,6 +15,15 @@ public class Vehicle extends SimObject {
 	private boolean hasArrived;
 	private boolean isWaiting;	
 
+	public boolean equals(Vehicle other) {
+		if (id == other.id) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	@Override
 	public void proceed() {
 		// //Comprobamos primero si el vehículo está averiado o no
@@ -77,6 +88,14 @@ public class Vehicle extends SimObject {
 			actualSpeed = newActualSpeed;
 		}
 	}	
+	
+	public int getBreakdownTime(){
+		return breakdownTime;
+	}
+	
+	public boolean getIsWaiting(){
+		return isWaiting;
+	}
 }
 
 
