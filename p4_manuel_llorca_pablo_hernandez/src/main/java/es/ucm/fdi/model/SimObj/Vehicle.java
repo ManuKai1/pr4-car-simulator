@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Vehicle extends SimObject {
 	private final String REPORT_TITLE = "[vehicle_report]";
 	
+	//Puede ser mejor una cola y quitamos en los que ya hemos estado?
 	private ArrayList<Junction> trip;
 	private Road road;
 	private int location;
@@ -66,8 +67,7 @@ public class Vehicle extends SimObject {
 	}
 	
 	public void moveToNextRoad() {
-		//Función de búsqueda de carreteras que salen de nuestro cruce actual.
-		//Sobre ellas, función de búsqueda de nuestro cruce deseado.
+		//Función de búsqueda de carreteras que van a nuestro siguiente cruce.
 		//Elegimos la única que coincide.
 		
 		//Primera vez: no hay carretera saliente.
