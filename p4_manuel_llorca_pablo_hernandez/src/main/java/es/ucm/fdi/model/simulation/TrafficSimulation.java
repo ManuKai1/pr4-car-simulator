@@ -9,6 +9,7 @@ public class TrafficSimulation {
 
 	private ArrayList<Event> events;
 	//Estructura para guardar objetos simulados?
+	//RoadMap
 	private int time;
 	
 	//Ordenados por tiempo, y si es el mismo, orden de llegada
