@@ -46,18 +46,24 @@ public class Vehicle extends SimObject {
 	
 	@Override
 	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
+		String info = "";
 		
-		report.append(REPORT_TITLE + '\n');
-		report.append("id = " + id + '\n');
-		report.append("time = " + simTime + '\n');
-		report.append("speed = " + actualSpeed + '\n');
-		report.append("kilometrage = " + kilometrage + '\n');
-		report.append("faulty = " + breakdownTime + '\n');
-		report.append("location = ");
-		report.append(hasArrived ? "arrived" : "(" + road.getID() + ", " + location + ")");
-		report.append("\n");
-		return report.toString();
+		info += REPORT_TITLE + '\n';
+		info += "id = " + id + '\n';
+		info += "time = " + simTime + '\n';
+		info += "speed = " + actualSpeed + '\n';
+		info += "kilometrage = " + kilometrage + '\n';
+		info += "faulty = " + breakdownTime + '\n';
+		info += "location = ";
+		
+		if(hasArrived) {
+			info += "arrived";
+		}
+		else {
+			info += '(' + road.getID() + ", " + location + ')';
+		}
+		info += '\n';
+		return info;
 	}
 	
 	public void moveToNextRoad() {
@@ -90,15 +96,6 @@ public class Vehicle extends SimObject {
 	public boolean getIsWaiting(){
 		return isWaiting;
 	}
-	
-	public Road getRoad(){
-		return road;
-	}
-
-	public int getLocation() {
-		return location;
-	}
-	
 }
 
 

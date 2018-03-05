@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class Road extends SimObject {
-	final private String REPORT_TITLE = "[road_report]";
+	final private String REPORT = "[road_report]";
 	
 	private Junction initialJunction;
 	private Junction endJunction;
@@ -40,31 +40,17 @@ public class Road extends SimObject {
 		}
 	}
 	
-	//Función de report de cada vehículo
-	private StringBuilder vehicleReport(Vehicle v){
-		StringBuilder report = new StringBuilder();
-		report.append("(" + v.getID() + "," + v.getLocation() + "), ");
-		return report;
-	}
-	
 	@Override
 	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
+		String info = "";
 		
-		report.append(REPORT_TITLE + '\n');
-		report.append("id = " + id + '\n');
-		report.append("time = " + simTime + '\n');
-		report.append("state = ");
-		//Si no hay vehículos no necesitamos escribir nada
-		if(!vehiclesOnRoad.isEmpty()){
-			for(Vehicle v : vehiclesOnRoad){
-				report.append(vehicleReport(v));
-			}
-			//Borrado de última coma y espacio
-			report.replace(report.length() - 1, report.length(), "");
-		}
-		report.append("\n");
-		return report.toString();
+		info += REPORT + '\n';
+		info += "id = " + id + '\n';
+		info += "time = " + simTime + '\n';
+		info += "state = ";
+		//Bucle for de la lista de vehículos
+		
+		return info;
 	}
 	
 	public void pushVehicle(Vehicle v) {
