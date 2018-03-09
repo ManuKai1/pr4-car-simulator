@@ -30,7 +30,7 @@ public class TrafficSimulation {
 			// en caso de que no sea nulo
 			String informe = "";
 			//Falta bucle que recorra estructuras en orden de entrada y junctions, roads, vehicles
-			informe +=;
+			// informe +=;
 			if(informe != ""){
 				//Guardado de fichero
 			}

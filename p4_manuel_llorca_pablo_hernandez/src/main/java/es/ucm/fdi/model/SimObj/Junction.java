@@ -1,93 +1,105 @@
 package es.ucm.fdi.model.SimObj;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Map;
+import es.ucm.fdi.model.simulation.RoadMap;
 
 public class Junction extends SimObject {
 	
 	private final String REPORT_TITLE = "[junction_report]";
-	
-	//Métodos offer / poll
-	Map<Road, IncomingRoad> roadToIncoming;
-	ArrayList<IncomingRoad> incoming;	
+
 	//Entero que mediante la operación módulo representa el semáforo encendido. Empieza en 0.
-	int light;
+	private int light;
+	private RoadMap map;
+	/*
+	* Como atributo para no llamarla como parámetro en el
+	* método proceed() [interface]. Y dado que Road y Vehicle
+	* parecen no necesitar un RoadMap.
+	*
+	* Se inicializa en constructor.
+	*/
 	
-	//Clase interna que representa una carretera entrante
-	private static class IncomingRoad {
-		private Road road;
-		//True si el semáforo está en verde
-		private boolean isGreen;
-		private ArrayDeque<Vehicle> waiting = new ArrayDeque<>();
-	}
+	
+	
 	
 	public Junction(String id) {
-		
+		this.id = id;
 	}
-	
-	private void lightAdvance(){
-		//Avanza en 1 el semáforo circular.
-		light = (light + 1) % incoming.size();
-	}
-	
+
+	/**
+	 * Método de AVANCE de Junction. En primer lugar, provoca el
+	 * avance de los vehículos de sus carreteras salientes. En segundo
+	 * lugar, provoca el paso de los vehículos de la carretera entrante
+	 * con el semáforo en verde. Finalmente, se actualiza el semáforo
+	 * circular.
+	 */
 	@Override
 	public void proceed() {
-		if(!incoming.get(light).waiting.isEmpty()){
+		// 1 //
+		// Los vehículos de las carreteras salientes avanzan.
+		for (Road r : map.getExitRoadsOf(this)) {
+			r.proceed();
+		}
+
+		// 2 //
+		// Los vehículos esperando en las carreteras entrantes avanzan
+		// si el semáforo se lo permite.		
+
+		// Carretera con el semáforo en verde.
+		Road greenRoad = map.getIncomingRoad(this, light);
+
+		if (!greenRoad.noVehiclesWaiting()) {
 			//Si el avance es posible, el vehículo se elimina de la cola.
 			//Visto en el enunciado; ¿por qué no iba a ser posible el avance?
-			incoming.get(light).waiting.getFirst().moveToNextRoad();
+			// TRY ... CATCH ...
+			greenRoad.moveWaitingVehicles(); // COMMENT: ¿Sólo cruza uno?
 		}
-		incoming.get(light).isGreen = false;
+
+		// 3 //
+		// Se actualiza el semáforo del cruce (y el indicador resp. de la carretera).
+		greenRoad.setLight(false);
 		lightAdvance();
-		incoming.get(light).isGreen = true;
 	}
 	
-	//Función de report de cada deque
-	private StringBuilder incomingReport(IncomingRoad actual){
-		StringBuilder report = new StringBuilder();
-		//ID
-		report.append('(' + actual.road.getID() + ',');
-		//Semáforo
-		report.append(actual.isGreen ? "green" : "red");
-		//Cola
-		report.append(",[");
-		if (actual.waiting.isEmpty()) {
-			report.append("]");
-		} 
-		else {
-			for (Vehicle v : actual.waiting) {
-				report.append(v.id + ",");
-			}
-			report.setCharAt(report.length(), ']');
-		}
-		report.append(")");
-		return report;
+	/**
+	 * Actualiza el semáforo circular de una Junction, poniendo el
+	 * semáforo de la Road indicada a 'true'.
+	 */
+	private void lightAdvance() {
+		// Número de carreteras entrantes en el cruce.
+		// COMMENT : Quizá mejor en el constructor, pues no tendría
+		// sentido que cambiase el tamaño durante la simulación.
+		int numIncomingRoads = map.getIncomingSizeIn(this);
+		
+		// Avanza en 1 el semáforo circular.
+		light = (light + 1) % numIncomingRoads;
+
+		// El semáforo de la carretera se pone verde.
+		map.getIncomingRoad(this, light).setLight(true);
 	}
-	
+
+	/**
+	 * Informe de la Junction en cuestión, mostrando: id,
+	 * tiempo de simulación, colas de espera de sus carreteras entrantes.
+	 * @param simTime tiempo de la simulación 
+	 */
 	@Override
 	public String getReport(int simTime) {
 		StringBuilder report = new StringBuilder();
+		// TITLE
 		report.append(REPORT_TITLE + '\n');
+		// ID
 		report.append("id = " + id);
+		// SimTime
 		report.append("time = " + simTime);
+		// Colas de espera
 		report.append("queues = ");
-		for(IncomingRoad incRoad : incoming){
-			report.append(incomingReport(incRoad) + ", ");
+		for ( Road incR : map.getIncomingRoadsOf(this) ) {
+			report.append(incR.getWaitingState());
+			report.append(",");
 		}
-		//Borrado de última coma y espacio
-		report.replace(report.length() - 1, report.length(), "\n");
+
+		//Borrado de última coma
+		report.deleteCharAt(report.length() - 1);
+
 		return report.toString();
-	}
-	
-	public void pushVehicle(Vehicle v){
-		//Buscar el incomingRoad de la road en Map
-		IncomingRoad next = roadToIncoming.get(v.getRoad());
-		//Añadir coche al final de la deque de incomingRoad
-		next.waiting.addLast(v);
-	}
-	
-	
-	
-	
+	}	
 }
