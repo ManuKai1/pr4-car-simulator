@@ -1,12 +1,13 @@
 package es.ucm.fdi.model.events;
 
+import es.ucm.fdi.ini.IniError;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public abstract class Event {
 	
 	private int time;
 	
-	public Event(int newTime) {
+	public Event(int newTime){
 		time = newTime;
 	}
 

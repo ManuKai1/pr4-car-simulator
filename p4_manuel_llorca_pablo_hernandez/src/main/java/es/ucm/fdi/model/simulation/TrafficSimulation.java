@@ -1,7 +1,6 @@
 package es.ucm.fdi.model.simulation;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.MultiTreeMap;
@@ -10,12 +9,15 @@ public class TrafficSimulation {
 
 	private MultiTreeMap<Integer, Event> events;
 	//Estructura para guardar objetos simulados?
-	//RoadMap
+	private RoadMap roadMap;
 	private int time;
 	
-	//Ordenados por tiempo, y si es el mismo, orden de llegada
-	public void pushEvent(Event e){
-		
+	//Función de añadir evento en función de su tiempo
+	public void pushEvent(Event e)throws SimulationException{
+		if(e.getTime() < time){
+			throw new SimulationException("Event time is lower than current time.");
+		}
+		events.putValue(e.getTime(), e);
 	}
 	
 	public void execute(int steps, OutputStream file){
