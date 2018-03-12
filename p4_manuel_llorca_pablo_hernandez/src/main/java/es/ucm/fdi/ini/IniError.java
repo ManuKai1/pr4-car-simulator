@@ -4,7 +4,7 @@ public class IniError extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	IniError(String msg) {
+	public IniError(String msg) {
 		super(msg);
 	}
 }
