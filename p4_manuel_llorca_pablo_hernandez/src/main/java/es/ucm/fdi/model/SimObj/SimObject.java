@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.SimObj;
 
-public abstract class SimObject { //Hacer clase madre del resto de: Vehicle, Road, Junction.
+//Clase padre del resto de: Vehicle, Road, Junction.
+public abstract class SimObject { 
 	protected String id;	
 	
 	public abstract void proceed();
