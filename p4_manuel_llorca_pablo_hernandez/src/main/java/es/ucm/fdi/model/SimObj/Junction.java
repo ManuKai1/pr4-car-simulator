@@ -50,7 +50,7 @@ public class Junction extends SimObject {
 			//Si el avance es posible, el vehículo se elimina de la cola.
 			//Visto en el enunciado; ¿por qué no iba a ser posible el avance?
 			// TRY ... CATCH ...
-			greenRoad.moveWaitingVehicles(); // COMMENT: ¿Sólo cruza uno?
+			greenRoad.moveWaitingVehicles();
 		}
 
 		// 3 //

@@ -23,8 +23,7 @@ public class Road extends SimObject {
 	// VER: arriveToWaiting()
 
 	private ArrayDeque<Vehicle> waiting;
-	private boolean isGreen; // ¿Quizá un 'enum(Green, Red, Yellow?)' aquí?
-
+	private boolean isGreen;
 	
 	// Para recolocar los coches tras el avance.
 	private static class CompByLocation implements Comparator<Vehicle> {

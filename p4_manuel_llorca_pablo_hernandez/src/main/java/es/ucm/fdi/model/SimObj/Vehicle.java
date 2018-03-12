@@ -7,7 +7,6 @@ import es.ucm.fdi.model.simulation.RoadMap;
 public class Vehicle extends SimObject {
 	private final String REPORT_TITLE = "[vehicle_report]";
 	
-	//Puede ser mejor una cola y quitamos en los que ya hemos estado?
 	private RoadMap map;
 	private ArrayList<Junction> trip;
 	private int lastTripPos;
@@ -135,7 +134,7 @@ public class Vehicle extends SimObject {
 	 * @param newBreakdownTime nuevo tiempo de avería
 	 */
 	public void setBreakdownTime(int newBreakdownTime)  {
-		breakdownTime = newBreakdownTime;
+		breakdownTime += newBreakdownTime;
 	}	
 	
 	/**

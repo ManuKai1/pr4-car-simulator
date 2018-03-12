@@ -4,10 +4,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.util.MultiTreeMap;
 
 public class TrafficSimulation {
 
-	private ArrayList<Event> events;
+	private MultiTreeMap<Integer, Event> events;
 	//Estructura para guardar objetos simulados?
 	//RoadMap
 	private int time;
