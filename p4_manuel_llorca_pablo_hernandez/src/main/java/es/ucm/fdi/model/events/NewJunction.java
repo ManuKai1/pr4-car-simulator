@@ -2,6 +2,7 @@ package es.ucm.fdi.model.events;
 
 import es.ucm.fdi.ini.IniError;
 import es.ucm.fdi.model.SimObj.Junction;
+import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public class NewJunction extends Event{
@@ -14,11 +15,16 @@ public class NewJunction extends Event{
 	}
 	
 	@Override
-	public void execute(TrafficSimulation sim) {
-		
+	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
+		if ( ! sim.existsJunction(id) ) {
+			sim.addJunction( newJunction() );
+		} 
+		else {
+			throw new AlreadyExistingSimObjException("Junction with id:" + id + " already in simulation.");
+		}
 	}
 	
-	public Junction createJunction(){
+	private Junction newJunction() {
 		return new Junction(id);
 	}
 

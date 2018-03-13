@@ -4,28 +4,41 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.Map;
 
-import es.ucm.fdi.model.events.NewRoad;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Road extends SimObject {
 	final private String REPORT_TITLE = "[road_report]";
 	
 	private int length;
 	private int speedLimit;
+	private Junction fromJunction;
+	private Junction toJunction;
 
+	/**
+	 * Lista de vehículos en la carretera que no están esperando
+	 * en el cruce.
+	 */
 	private ArrayList<Vehicle> vehiclesOnRoad;
 
+	/**
+	 * Lista temporal reutilizada en cada tick en la que se ordenan
+	 * los vehículos que llegan al cruce por tiempo de llegada al
+	 * cruce.
+	 */
 	private ArrayList<ArrivedVehicle> arrivalsToWaiting;
-	// COMMENT: Un coche puede llegar antes por velocidad,
-	// aunque su proceed() se haga por el orden de vehiclesOnRoad.
-	// Float es la razón actualSpeed / distanceToEnd.
-	// VER: arriveToWaiting()
 
+	/**
+	 * Lista de vehículos en la carretera que están esperando en
+	 * el cruce.
+	 */
 	private ArrayDeque<Vehicle> waiting;
 	private boolean isGreen;
 	
-	// Para recolocar los coches tras el avance.
+	/**
+	 * Comparador según la localización de 2 vehículos en la carretera,
+	 * para ordenar vehiclesOnRoad tras cada avance de los coches.
+	 */
 	private static class CompByLocation implements Comparator<Vehicle> {
 		@Override
 		public int compare(Vehicle v1, Vehicle v2) {
@@ -36,7 +49,10 @@ public class Road extends SimObject {
 		// ROADEND - (v1, 80) < (v2, 78) < (v3, 50) < (v4, 20) - ROADBEGIN
 	}
 
-	// Para meter a los coches a la cola de espera.
+	/**
+	 * Comparador según el tiempo de llegada al final de la carretera, para
+	 * ordenar los arrivedVehicles según su tiempo de llegada.
+	 */
 	private static class CompArrivedVehicles implements Comparator<ArrivedVehicle> {
 		@Override
 		public int compare(ArrivedVehicle av1, ArrivedVehicle av2) {
@@ -53,7 +69,10 @@ public class Road extends SimObject {
 		// ROADEND - (v1, 0.1s) < (v2, 0.5s) < (v3, 2s) < (v4, 3s) - ROADBEGIN
 	}
 
-	// Para los coches que llegan al cruce.
+	/**
+	 * Clase interna que guarda cada vehículo con su tiempo de llegada
+	 * al final de la carretera.
+	 */
 	private class ArrivedVehicle {
 		private Vehicle arrived;
 		private float time;
@@ -73,8 +92,20 @@ public class Road extends SimObject {
 	}
 		
 	
-	public Road(NewRoad builder) { //¿?//
-		
+	public Road(String identifier, int len, int spLimit, Junction fromJ, Junction toJ) {
+		super(identifier);
+		length = len;
+		speedLimit = spLimit;
+		fromJunction = fromJ;
+		toJunction = toJ;
+
+		// Listas vacías
+		vehiclesOnRoad = new ArrayList<>();
+		arrivalsToWaiting = new ArrayList<>();
+		waiting = new ArrayDeque<>();
+
+		// Actualización de cruces afectados.
+		getInOwnJunctions();	
 	}
 
 	/**
@@ -95,7 +126,7 @@ public class Road extends SimObject {
 		// Se modifica la velocidad a la que avanzarán los vehículos,
 		// teniendo en cuenta el factor de reducción.
 		for (Vehicle v : vehiclesOnRoad) {
-			v.setSpeed(baseSpeed / reductionFactor);
+			v.setSpeed( baseSpeed / reductionFactor );
 
 			if (v.getBreakdownTime() > 0) {
 				reductionFactor = 2;
@@ -110,7 +141,7 @@ public class Road extends SimObject {
 		vehiclesOnRoad.sort(new CompByLocation());
 
 		// 3 //
-		// Los coches que llegan al final entran por orden la col de espera.
+		// Los coches que llegan al final entran por orden en la cola de espera.
 		pushArrivalsToWaiting();
 	}
 
@@ -139,7 +170,7 @@ public class Road extends SimObject {
 			waiting.addLast(av.getArrived());
 		}
 
-		// Se vacía el array para el siguiente tic
+		// Se vacía el array para el siguiente tick
 		arrivalsToWaiting.clear();
 	}
 
@@ -156,18 +187,31 @@ public class Road extends SimObject {
 	 * Mueve los Vehicle a la espera en un Junction a sus respectivas
 	 * Road de salida.
 	 */
-	public void moveWaitingVehicles() {
+	public void moveWaitingVehicles() throws SimulationException {
 		// EXCEPCIÓN: si se llama con semáforo en rojo.
-		
-		// Saca al primer vehículo que está esperando.
-		Vehicle moving = waiting.pollFirst();
+		if ( isGreen ) {
+			// Saca al primer vehículo que está esperando.
+			Vehicle moving = waiting.pollFirst();
 
-		if (moving != null) {
-			// Se mueve a la siguiente carretera.
-			moving.moveToNextRoad();
-		} else {
-			// EXCEPCION: No hay ningún vehículo esperando.
-			// throw ...
+			// Si hay algún vehículo y no está averiado.
+			if (moving != null && moving.getBreakdownTime() == 0) {
+				// Se mueve a la siguiente carretera.
+				moving.moveToNextRoad();
+			}
+		}
+		else {
+			throw new SimulationException("Tried to advance waiting vehicle with red traffic lights in road with id: " + id);
+		}	
+	}
+
+	/**
+	 * Actualiza el estado de los vehículos averiados en la cola de espera.
+	 */
+	public void refreshWaiting() {
+		for ( Vehicle v : waiting ) {
+			if ( v.getBreakdownTime() > 0 ) {
+				v.setBreakdownTime(-1);
+			}
 		}
 	}
 
@@ -257,6 +301,15 @@ public class Road extends SimObject {
 	}
 
 	/**
+	 * Actualiza sus cruces de salida y destino para que incluyan
+	 * la carretera en sus listas de entrada y salida.
+	 */
+	private void getInOwnJunctions() {
+		fromJunction.getExitRoads().add(this);
+		toJunction.getIncomingRoads().add(this);
+	}
+
+	/**
 	 * Mete un vehículo al final de vehiclesOnRoad
 	 */
 	public void pushVehicle(Vehicle v) {
@@ -294,5 +347,23 @@ public class Road extends SimObject {
 	 */
 	public void setLight(boolean green) {
 		isGreen = green;
-	}	
+	}
+
+	/**
+	 * Devuelve la Junction desde la que empieza la
+	 * carretera.
+	 * @returns from Junction
+	 */
+	public Junction getFromJunction() {
+		return fromJunction;
+	}
+
+	/**
+	 * Devuelve la Junction desde la que empieza la
+	 * carretera.
+	 * @returns from Junction
+	 */
+	public Junction getToJunction() {
+		return toJunction;
+	}
 }

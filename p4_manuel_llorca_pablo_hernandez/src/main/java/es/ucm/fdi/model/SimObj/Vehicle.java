@@ -1,13 +1,13 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-import es.ucm.fdi.model.simulation.RoadMap;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Vehicle extends SimObject {
 	private final String REPORT_TITLE = "[vehicle_report]";
 	
-	private RoadMap map;
 	private ArrayList<Junction> trip;
 	private int lastTripPos;
 	private int maxSpeed;
@@ -21,9 +21,29 @@ public class Vehicle extends SimObject {
 	private int location;
 	private int actualSpeed;	
 
-	public Vehicle() {
-		// setTrip();
+	public Vehicle(String identifier, ArrayList<Junction> trp, int max) {
+		super(identifier);
+		trip = trp;
+		maxSpeed = max;
 
+		// Valores iniciales.
+		lastTripPos = 0;
+		kilometrage = 0;
+		breakdownTime = 0;
+
+		hasArrived = false;
+		isWaiting = false;
+
+		// Se mete en la primera carretera.
+		try {
+			road = getRoadBetween( trip.get(lastTripPos), trip.get(lastTripPos + 1) );
+		}
+		catch (SimulationException e) {
+			// System.err.println( e.getMessage() );
+		}
+
+		location = 0;
+		actualSpeed = 0; // Irrelevante.
 	}
 	
 	/**
@@ -74,31 +94,83 @@ public class Vehicle extends SimObject {
 	}
 	
 	/**
-		 * Mueve el vehículo a la carretera siguiente en su itinerario.
-		 * Anteriormente, el vehículo debe haber salido de la carretera en
-		 * la que estaba esperando.
-		 */
+	* Mueve el vehículo a la carretera siguiente en su itinerario.
+	* Anteriormente, el vehículo debe haber salido de la carretera en
+	* la que estaba esperando.
+	*/
 	public void moveToNextRoad() {
-		//Función de búsqueda de carreteras que van a nuestro siguiente cruce.
-		//Elegimos la única que coincide.
 		int waitingPos = lastTripPos + 1;
 		int nextWaitingPos = waitingPos + 1;
 
-		// Primera vez. El cruce desde el que se ha entrado a la Road
-		// es el primero
-		if (lastTripPos == 0) {
-			road = map.getRoadBetween(trip.get(lastTripPos), trip.get(waitingPos));
-			road.pushVehicle(this);
+		if ( lastTripPos == 0 ) {
+			// Primera vez. El cruce desde el que se ha entrado a la Road es el primero.
+			try {
+				road = getRoadBetween( trip.get(lastTripPos), trip.get(waitingPos) );
+				road.pushVehicle(this);
 
-			location = 0;
-		} else if (nextWaitingPos == trip.size()) {
+				location = 0;
+			} catch (SimulationException e) {
+				// System.err.println( e.getMessage() );
+			}			
+		} 
+		else if ( nextWaitingPos == trip.size() ) {
 			// Última vez. El cruce donde se espera es el destino final.
 			hasArrived = true;
-		} else {
+		} 
+		else {
 			// Cambio normal de una Road a otra.
-			road = map.getRoadBetween(trip.get(waitingPos), trip.get(nextWaitingPos));
-			road.pushVehicle(this);
-			location = 0;
+			try {
+				road = getRoadBetween(trip.get(waitingPos), trip.get(nextWaitingPos));
+				road.pushVehicle(this);
+
+				location = 0;
+			} catch (SimulationException e) {
+				// System.err.println( e.getMessage() );
+			}			
+		}
+
+		isWaiting = false;
+	}
+
+	/**
+	 * Método privado de Vehicle que devuelve la carretera entre dos cruces. Para ser utilizada
+	 * con dos cruces consecutivos de la ruta del vehículo en cuestión.
+	 * @param fromJunction cruce de origen
+	 * @param toJunction cruce de destino
+	 * @throws SimulationException if road between Junctions not found
+	 * @return carretera entre los dos cruces
+	 */
+	private Road getRoadBetween(Junction fromJunction, Junction toJunction) throws SimulationException {
+		// Carreteras de salida y entrada.
+		ArrayList<Road> fromRoads = fromJunction.getExitRoads();
+		ArrayList<Road> toRoads = toJunction.getIncomingRoads();
+		// Carretera buscada.
+		Road searched = null;
+
+		// Se recorren las carreteras de salida.
+		boolean found = false;
+		Iterator<Road> fromIt = fromRoads.iterator();
+		while (fromIt.hasNext() && !found) {
+			Road fromR = fromIt.next();
+
+			// Se recorren las carreteras de entrada.
+			Iterator<Road> toIt = toRoads.iterator();
+			while (toIt.hasNext() && !found) {
+				Road toR = toIt.next();
+				if (toR == fromR) {
+					found = true;
+					searched = fromR;
+				}
+			}
+		}
+
+		if (found) {
+			return searched;
+		} else {
+			throw new SimulationException(
+				"Road not fot found on route of vehicle with id: " + id + 
+				" between junctions with id: " + fromJunction.getID() + ", " 
+				+ toJunction.getID());
 		}
 	}
 
@@ -133,8 +205,8 @@ public class Vehicle extends SimObject {
 	 * Modifica el tiempo de avería.
 	 * @param newBreakdownTime nuevo tiempo de avería
 	 */
-	public void setBreakdownTime(int newBreakdownTime)  {
-		breakdownTime += newBreakdownTime;
+	public void setBreakdownTime(int addedBreakdownTime)  {
+		breakdownTime += addedBreakdownTime;
 	}	
 	
 	/**

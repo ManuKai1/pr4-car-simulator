@@ -1,6 +1,5 @@
 package es.ucm.fdi.control.evbuild;
 
-import java.util.regex.Pattern;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
@@ -71,7 +70,7 @@ public class NewRoadBuilder extends EventBuilder{
 				throw new IllegalArgumentException("Non-positive length in road with ID: " + id);
 			}
 			
-			NewRoad road = new NewRoad(time, id, src, dest, maxSpeed, length);
+			NewRoad road = new NewRoad(time, id, length, maxSpeed, src, dest);
 			return road;
 			
 		}
