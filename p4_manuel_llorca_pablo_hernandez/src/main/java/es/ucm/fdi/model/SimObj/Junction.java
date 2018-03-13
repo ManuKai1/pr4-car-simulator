@@ -2,6 +2,7 @@ package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
 
+import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Junction extends SimObject {
@@ -106,6 +107,30 @@ public class Junction extends SimObject {
 		report.deleteCharAt(report.length() - 1);
 
 		return report.toString();
+	}
+	
+	/**
+	 * A partir de los datos del cruce genera una IniSection
+	 * @param simTime tiempo del simulador
+	 * @return IniSection report del cruce
+	 */
+	public IniSection generateIniSection(int simTime){
+		String tag = REPORT_TITLE;
+		//Creación de etiqueta (sin corchetes)
+		tag = (String) tag.subSequence(1, tag.length() - 2);
+		IniSection section = new IniSection(tag);
+		section.setValue("id", id);
+		section.setValue("time", simTime);
+		StringBuilder queues = new StringBuilder();
+		//Generación del string de queues
+		for ( Road incR : incomingRoads ) {
+			queues.append(incR.getWaitingState());
+			queues.append(",");
+		}
+		//Borrado de última coma
+		queues.deleteCharAt(queues.length() - 1);
+		section.setValue("queues", queues.toString());
+		return section;
 	}
 	
 	/**

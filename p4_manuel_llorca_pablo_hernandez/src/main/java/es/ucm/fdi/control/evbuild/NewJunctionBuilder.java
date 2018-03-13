@@ -18,7 +18,7 @@ public class NewJunctionBuilder extends EventBuilder{
 		//Comprobación de que es un NewJunction
 		if(ini.getTag().equals(iniName)){
 			String id = ini.getValue("id");
-			int time;
+			int time = 0;
 			
 			//El ID sólo contiene letras,. números, o '_'
 			if(!EventBuilder.validID(id)){

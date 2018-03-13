@@ -1,8 +1,11 @@
 package es.ucm.fdi.model.simulation;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
@@ -17,11 +20,6 @@ public class TrafficSimulation {
 	 * que se ejecutan en ese tiempo.
 	 */
 	private MultiTreeMap<Integer, Event> events;
-
-	/**
-	 * Mapa de objetos de simulación.
-	 */
-	RoadMap simObjects;
 
 	/**
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
@@ -64,11 +62,8 @@ public class TrafficSimulation {
 				try {
 					event.execute(this);
 				}
-				catch (AlreadyExistingSimObjException e1) {
+				catch (SimulationException e1) {
 					// System.err.println( e1.getMessage() );
-				}
-				catch (NonExistingSimObjException e2) {
-					// System.err.println ( e2.getMessage() );
 				}				
 			}
 
@@ -85,13 +80,30 @@ public class TrafficSimulation {
 
 			// Se avanza un tick.
 			time++;
-			// 5. esciribir un informe en OutputStream
+			// Escribir un informe en OutputStream
 			// en caso de que no sea nulo
-			String informe = "";
-			//Falta bucle que recorra estructuras en orden de entrada y junctions, roads, vehicles
-			// informe +=;
-			if(informe != "") {
-				//Guardado de fichero
+			if(file != null) {
+				//Creación de ini
+				Ini iniFile = new Ini();
+				//Junctions:
+				for(Junction junction : roadMap.getJunctions()){
+					iniFile.addsection(junction.generateIniSection(time));
+				}
+				//Roads:
+				for(Road road : roadMap.getRoads()){
+					iniFile.addsection(road.generateIniSection(time));
+				}
+				//Vehicles:
+				for(Vehicle vehicle : roadMap.getVehicles()){
+					iniFile.addsection(vehicle.generateIniSection(time));
+				}
+				
+				try{
+					iniFile.store(file);
+				}
+				catch(IOException e){
+					System.err.println("Error when saving file on time " + time + ":" + e.getMessage());
+				}
 			}
 		}
 	}

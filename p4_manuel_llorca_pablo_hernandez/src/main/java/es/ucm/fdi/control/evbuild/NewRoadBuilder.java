@@ -15,7 +15,7 @@ public class NewRoadBuilder extends EventBuilder{
 	Event parse(IniSection ini) {
 		if(ini.getTag().equals(iniName)){
 			String id = ini.getValue("id");
-			int time;
+			int time = 0;
 			int maxSpeed;
 			int length;
 			

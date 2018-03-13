@@ -3,6 +3,7 @@ package es.ucm.fdi.model.SimObj;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Vehicle extends SimObject {
@@ -202,8 +203,28 @@ public class Vehicle extends SimObject {
 	}
 	
 	/**
+	 * A partir de los datos del vehículo genera una IniSection
+	 * @param simTime tiempo del simulador
+	 * @return IniSection report del vehículo
+	 */
+	public IniSection generateIniSection(int simTime){
+		String tag = REPORT_TITLE;
+		//Creación de etiqueta (sin corchetes)
+		tag = (String) tag.subSequence(1, tag.length() - 2);
+		IniSection section = new IniSection(tag);
+		section.setValue("id", id);
+		section.setValue("time", simTime);
+		section.setValue("speed", actualSpeed);
+		section.setValue("kilometrage", kilometrage);
+		section.setValue("faulty", breakdownTime);
+		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + ", " + location + ")");
+		return section;
+	}
+	
+	
+	/**
 	 * Modifica el tiempo de avería.
-	 * @param newBreakdownTime nuevo tiempo de avería
+	 * @param addedBreakdownTime tiempo de avería a sumar
 	 */
 	public void setBreakdownTime(int addedBreakdownTime)  {
 		breakdownTime += addedBreakdownTime;

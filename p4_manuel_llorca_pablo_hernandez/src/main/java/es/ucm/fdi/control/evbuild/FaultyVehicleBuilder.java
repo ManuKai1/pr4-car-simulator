@@ -16,7 +16,7 @@ public class FaultyVehicleBuilder extends EventBuilder{
 	@Override
 	Event parse(IniSection ini) {
 		if(ini.getTag().equals(iniName)){
-			int time;
+			int time = 0;
 			
 			try{
 				time = Integer.parseInt(ini.getValue("time"));

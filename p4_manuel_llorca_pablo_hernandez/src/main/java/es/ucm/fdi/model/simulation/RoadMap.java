@@ -34,6 +34,13 @@ public class RoadMap {
     public ArrayList<Junction> getJunctions() {
         return junctionObjects;
     }
+    
+    /**
+     * Devuelve la lista de vehículos.
+     */
+    public ArrayList<Vehicle> getVehicles() {
+        return vehicleObjects;
+    }
 
     /**
      * Añade un cruce a la lista de cruces.

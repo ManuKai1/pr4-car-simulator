@@ -20,7 +20,7 @@ public class NewVehicleBuilder extends EventBuilder{
 	Event parse(IniSection ini) {
 		if(ini.getTag().equals(iniName)){
 			String id = ini.getValue("id");
-			int time;
+			int time = 0;
 			int maxSpeed;
 			
 			//El ID sólo contiene letras,. números, o '_'

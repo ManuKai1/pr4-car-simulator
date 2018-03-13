@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
+import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Road extends SimObject {
@@ -300,6 +301,22 @@ public class Road extends SimObject {
 		return state;
 	}
 
+	/**
+	 * A partir de los datos de la carretera genera una IniSection
+	 * @param simTime tiempo del simulador
+	 * @return IniSection report de la carretera
+	 */
+	public IniSection generateIniSection(int simTime){
+		String tag = REPORT_TITLE;
+		//Creación de etiqueta (sin corchetes)
+		tag = (String) tag.subSequence(1, tag.length() - 2);
+		IniSection section = new IniSection(tag);
+		section.setValue("id", id);
+		section.setValue("time", simTime);
+		section.setValue("state", getRoadState().toString());
+		return section;
+	}
+	
 	/**
 	 * Actualiza sus cruces de salida y destino para que incluyan
 	 * la carretera en sus listas de entrada y salida.
