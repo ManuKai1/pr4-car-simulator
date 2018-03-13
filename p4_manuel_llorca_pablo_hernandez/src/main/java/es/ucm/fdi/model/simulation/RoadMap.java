@@ -1,130 +1,118 @@
 package es.ucm.fdi.model.simulation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
-import es.ucm.fdi.util.MultiTreeMap;
+import es.ucm.fdi.model.SimObj.Vehicle;
 
 public class RoadMap {
     
+    /*
+     * Character representa los
+     * distintos objetos de simulación ('J', 'R', 'V'), simObject para
+     * añadir listas de objetos creados.
+     */
+    
     // MAPA
-    private MultiTreeMap<Junction, Road> inputRoads;
-    private MultiTreeMap<Junction, Road> exitRoads;
+    private ArrayList<Junction> junctionObjects;
+    private ArrayList<Road> roadObjects;
+    private ArrayList<Vehicle> vehicleObjects;
 
     // MÉTODOS
+
     /**
-     * Devuelve el número de carreteras entrantes que tiene
-     * un cruce.
-     * @param junction cruce a consultar
-     * @returns número de carreteras entrantes
+     * Devuelve la lista de carreteras.
      */
-    public int getIncomingSizeIn(Junction junction) {
-        return inputRoads.get(junction).size();
+    public ArrayList<Road> getRoads() {
+        return roadObjects;
     }
 
     /**
-     * Devuelve una carretera entrante dada su posición en el ArrayList.
-     * @param junction cruce en cuestión
-     * @param pos posición en la lista de entrantes
-     * @returns carretera entrante en esa posición
+     * Devuelve la lista de cruces.
      */
-    public Road getIncomingRoad(Junction junction, int pos) {
-        return inputRoads.get(junction).get(pos);
+    public ArrayList<Junction> getJunctions() {
+        return junctionObjects;
     }
 
     /**
-     * Devuelve la lista de carreteras entrantes de un Junction.
-     * @param junction cruce en cuestión
-     * @returns ArrayList con carreteras entrantes
+     * Añade un cruce a la lista de cruces.
      */
-    public ArrayList<Road> getIncomingRoadsOf(Junction junction) {
-        return inputRoads.get(junction);
+    public void addJunction(Junction newJunction) {
+        junctionObjects.add(newJunction);
+    }
+
+    /**
+    * Añade una carretera a la lista de carreteras.
+    */
+    public void addRoad(Road newRoad) {
+        roadObjects.add(newRoad);
     }
     
     /**
-     * Devuelve la lista de carreteras salientes de un Junction
-     * @param junction cruce en cuestión
-     * @returns ArrayList con carreteras salientes
+     * Añade un vehículo a la lista de vehículos.
      */
-    public ArrayList<Road> getExitRoadsOf(Junction junction) {
-        return exitRoads.get(junction);
+    public void addVehicle(Vehicle newVehicle) {
+        vehicleObjects.add(newVehicle);
     }
 
-    /**
-     * Busca y devuelve la carretera (única) que une dos Junction.
-     * @param fromJ cruce de salida
-     * @param toJ cruce de llegada
-     * @returns carretera común
-     */
-    public Road getRoadBetween(Junction fromJ, Junction toJ) {
-        // Carreteras de salida y entrada.
-        ArrayList<Road> fromRoads = exitRoads.get(fromJ);
-        ArrayList<Road> toRoads = inputRoads.get(toJ);
-        // Carretera buscada.
-        Road searched = null;
-
-        // Se recorren las carreteras de salida.
-        boolean found = false;
-        Iterator<Road> fromIt = fromRoads.iterator();
-        while ( fromIt.hasNext() && ! found ) {
-            Road fromR = fromIt.next();
-            
-            // Se recorren las carreteras de entrada.
-            Iterator<Road> toIt = toRoads.iterator();
-            while ( toIt.hasNext() && ! found ) {
-                Road toR = toIt.next();
-                if ( toR == fromR ) {
-                    found = true;
-                    searched = fromR;
-                }
+    public boolean existsJunctionID(String id) {
+        // O(n)
+        for (Junction j : junctionObjects) {
+            if (j.getID().equals(id)) {
+                return true;
             }
         }
 
-        if ( found ) {
-            return searched;
-        }
-        else { 
-            // EXCEPCION.
-            return null;
-        }
+        return false;
     }
+
+    public boolean existsRoadID(String id) {
+        // O(n)
+        for ( Road r : roadObjects ) {
+            if ( r.getID().equals(id) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean existsVehicleID(String id) {
+        // O(n)
+        for ( Vehicle v : vehicleObjects ) {
+            if ( v.getID().equals(id) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Vehicle getVehicleWithID(String id) {
+        // O(n)
+        for ( Vehicle v : vehicleObjects ) {
+            if ( v.getID().equals(id) ) {
+                return v;
+            }
+        }
+
+        return null;
+    }
+
+
+    public Junction getJunctionWithID(String id) {
+        // O(n)
+        for ( Junction j : junctionObjects ) {
+            if ( j.getID().equals(id) ) {
+                return j;
+            }
+        }
+
+        return null;
+    }
+
+
+
     
-    /*
-    * COMENTARIO TOCHO DE COSAS SOBRE FORMA DE ALMACENAR ESTO
-    */ 
-    
-    /*
-    * Encontrar forma de mapear, si utilizaramos 2 treeMaps,
-    * tal vez, la clase incomingRoads dejaría de tener sentido
-    * en Junction.
-    * Pero si crearamos IncomingRoad(y quizá exitRoad) como clase,
-    * ¿no habría una (exit)Road en el mapa exitRoads y la misma
-    * incomingRoad en el mapa inputRoads; es decir, duplicadas.
-    */
-
-    /*
-    * Tener en cuenta también que con MultiTreeMap, podríamos
-    * saber qué carreteras salientes tiene una Junction, pero
-    * dada una carretera no podríamos hacer la operación inversa.
-    *
-    * Quizá por ello tuviese sentido los atributos initialJunction
-    * y endJunction en cada Road.
-    */
-
-    /*
-    * Y al final el problema acaba siendo: ¿de qué forma va a leer el
-    * programa los datos?
-    */
-    
-    
-    // POSIBLE IMPLEMENTACIÓN.
-    
-
-    // Métodos de entrada de datos.
-
-    // public Road searchRoadBetween(Junction fromJunction, Junction toJunction)
-
-
 }
