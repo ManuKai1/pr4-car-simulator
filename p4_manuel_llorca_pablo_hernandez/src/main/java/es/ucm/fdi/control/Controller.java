@@ -28,13 +28,16 @@ public class Controller {
         // Recorre las secciones del archivo .ini de entrada
         // y construye y guarda los eventos en el simulador.
         for ( IniSection sec : iniInput.getSections() ) {
-            Event ev = parser.parse(sec);
-            try {
-                simulator.pushEvent(ev);
-            }
-            catch (SimulationException e) {
+        	try{
+        		Event ev = parser.parse(sec);
+                simulator.pushEvent(ev);   
+        	}
+            catch(IllegalArgumentException e){
+            	System.err.println( e.getMessage() );
+            }   
+        	catch (SimulationException e) {
                 System.err.println( e.getMessage() );
-            }            
+            } 
         }
 
         // 2 // 

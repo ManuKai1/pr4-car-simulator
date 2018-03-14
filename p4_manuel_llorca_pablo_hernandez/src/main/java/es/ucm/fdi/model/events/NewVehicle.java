@@ -47,7 +47,7 @@ public class NewVehicle extends Event {
 				trip.add(j);
 			}
 			else {
-				throw new NonExistingSimObjException("Junction with id: " + jID + "from itinerary of vehicle with id: " + id + " not found in simulation.");
+				throw new NonExistingSimObjException("Junction with id: " + jID + " from itinerary of vehicle with id: " + id + " not found in simulation.");
 			}
 		}
 		return new Vehicle(id, trip, maxSpeed);
