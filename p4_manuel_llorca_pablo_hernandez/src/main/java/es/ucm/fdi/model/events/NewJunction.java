@@ -28,4 +28,14 @@ public class NewJunction extends Event{
 		return new Junction(id);
 	}
 
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			NewJunction other = (NewJunction) obj;
+			same = same && id == other.id;
+		}
+		return same;
+	}
+	
 }

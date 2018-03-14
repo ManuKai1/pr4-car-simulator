@@ -24,16 +24,19 @@ public class NewVehicleBuilder extends EventBuilder{
 				throw new IllegalArgumentException("Illegal vehicle ID: " + id);
 			}
 			
-			try{
-				time = Integer.parseInt(ini.getValue("time"));
-			}
-			//El tiempo no era un entero
-			catch(NumberFormatException e){
-				throw new IllegalArgumentException("Time reading failure in vehicle with ID: " + id);
-			}
-			//Comprobamos que el tiempo sea no negativo
-			if(time < 0){
-				throw new IllegalArgumentException("Negative time in vehicle with ID: " + id);
+			String timeKey = ini.getValue("time");
+			if(timeKey != null){
+				try{
+					time = Integer.parseInt(timeKey);
+				}
+				//El tiempo no era un entero
+				catch(NumberFormatException e){
+					throw new IllegalArgumentException("Time reading failure in vehicle with ID: " + id);
+				}
+				//Comprobamos que el tiempo sea no negativo
+				if(time < 0){
+					throw new IllegalArgumentException("Negative time in vehicle with ID: " + id);
+				}
 			}
 			
 			try{

@@ -25,4 +25,15 @@ public class FaultyVehicle extends Event {
 			System.err.println(e.getMessage());
 		}
 	}
+	
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			FaultyVehicle other = (FaultyVehicle) obj;
+			same = same && vehiclesID.equals(other.vehiclesID);
+			same = same && duration == other.duration;
+		}
+		return same;
+	}
 }

@@ -51,7 +51,19 @@ public class NewRoad extends Event {
 			throw new NonExistingSimObjException("One or both junctions from Road with id: " + id + " don't exist.");
 		}
 
-		
+	}
+	
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			NewRoad other = (NewRoad) obj;
+			same = same && id == other.id;
+			same = same && length == other.length;
+			same = same && fromJunctionID.equals(other.fromJunctionID);
+			same = same && toJunctionID.equals(other.toJunctionID);
+		}
+		return same;
 	}
 	
 }

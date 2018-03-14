@@ -53,4 +53,16 @@ public class NewVehicle extends Event {
 		return new Vehicle(id, trip, maxSpeed);
 	}
 
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			NewVehicle other = (NewVehicle) obj;
+			same = same && id == other.id;
+			same = same && maxSpeed == other.maxSpeed;
+			same = same && tripID.equals(other.tripID);
+		}
+		return same;
+	}
+	
 }

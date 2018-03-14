@@ -24,17 +24,22 @@ public class NewRoadBuilder extends EventBuilder{
 				throw new IllegalArgumentException("Illegal road ID: " + id);
 			}
 			
-			try{
-				time = Integer.parseInt(ini.getValue("time"));
+			//Si se ha incluido la key time
+			String timeKey = ini.getValue("time");
+			if(timeKey != null){
+				try{
+					time = Integer.parseInt(timeKey);
+				}
+				//El tiempo no era un entero
+				catch(NumberFormatException e){
+					throw new IllegalArgumentException("Time reading failure in road with ID: " + id);
+				}
+				//Comprobamos que el tiempo sea no negativo
+				if(time < 0){
+					throw new IllegalArgumentException("Negative time in road with ID: " + id);
+				}
 			}
-			//El tiempo no era un entero
-			catch(NumberFormatException e){
-				throw new IllegalArgumentException("Time reading failure in road with ID: " + id);
-			}
-			//Comprobamos que el tiempo sea no negativo
-			if(time < 0){
-				throw new IllegalArgumentException("Negative time in road with ID: " + id);
-			}
+			
 			
 			String src = ini.getValue("src");
 			if(!EventBuilder.validID(src)){

@@ -17,16 +17,20 @@ public class FaultyVehicleBuilder extends EventBuilder{
 		if(ini.getTag().equals(iniName)){
 			int time = 0;
 			
-			try{
-				time = Integer.parseInt(ini.getValue("time"));
-			}
-			//El tiempo no era un entero
-			catch(NumberFormatException e){
-				throw new IllegalArgumentException("Time reading failure in faulty vehicles.");
-			}
-			//Comprobamos que el tiempo sea no negativo
-			if(time < 0){
-				throw new IllegalArgumentException("Negative time in faulty vehicles.");
+			//Si se ha incluido la key time
+			String timeKey = ini.getValue("time");
+			if(timeKey != null){
+				try{
+					time = Integer.parseInt(timeKey);
+				}
+				//El tiempo no era un entero
+				catch(NumberFormatException e){
+					throw new IllegalArgumentException("Time reading failure in faulty vehicles.");
+				}
+				//Comprobamos que el tiempo sea no negativo
+				if(time < 0){
+					throw new IllegalArgumentException("Negative time in faulty vehicles.");
+				}
 			}
 			
 			int duration;
