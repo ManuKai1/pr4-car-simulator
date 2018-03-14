@@ -1,5 +1,7 @@
 package es.ucm.fdi.model.SimObj;
 
+import es.ucm.fdi.model.events.Event;
+
 
 //Clase padre del resto de: Vehicle, Road, Junction.
 public abstract class SimObject { 
@@ -15,4 +17,16 @@ public abstract class SimObject {
 	public String getID() {
 		return id;
 	}
+	
+	public boolean equals(Object obj){
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SimObject other = (SimObject) obj;
+		return id == other.id;
+	}
+	
 }

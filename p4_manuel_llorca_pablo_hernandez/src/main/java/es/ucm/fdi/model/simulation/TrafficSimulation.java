@@ -25,7 +25,7 @@ public class TrafficSimulation {
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
 	 * y salientes.
 	 */
-	private RoadMap roadMap;
+	RoadMap roadMap;
 
 	/**
 	 * Tiempo actual de la simulación.

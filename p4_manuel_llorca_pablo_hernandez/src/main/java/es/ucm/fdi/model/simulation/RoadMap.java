@@ -125,6 +125,17 @@ public class RoadMap {
 
         return null;
     }
+    
+    public Road getRoadWithID(String id) {
+        // O(n)
+        for ( Road r : roadObjects ) {
+            if ( r.getID().equals(id) ) {
+                return r;
+            }
+        }
+
+        return null;
+    }
 
 
 

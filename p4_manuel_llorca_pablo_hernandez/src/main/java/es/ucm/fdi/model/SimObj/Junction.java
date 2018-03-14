@@ -168,4 +168,17 @@ public class Junction extends SimObject {
 	public ArrayList<Road> getExitRoads() {
 		return exitRoads;
 	}
+	
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			Junction other = (Junction) obj;
+			same = same && light == other.light;
+			same = same && incomingRoads.equals(other.incomingRoads);
+			same = same && exitRoads.equals(other.exitRoads);
+		}
+		return same;
+	}
+	
 }

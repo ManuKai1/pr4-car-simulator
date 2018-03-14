@@ -262,6 +262,26 @@ public class Vehicle extends SimObject {
 	public int getLocation() {
 		return location;
 	}
+	
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			Vehicle other = (Vehicle) obj;
+			same = same && trip.equals(other.trip);
+			same = same && lastTripPos == other.lastTripPos;
+			same = same && maxSpeed == other.maxSpeed;
+			same = same && kilometrage == other.kilometrage;
+			same = same && breakdownTime == other.breakdownTime;
+			same = same && hasArrived == other.hasArrived;
+			same = same && isWaiting == other.isWaiting;
+			same = same && road.equals(other.road);
+			same = same && location == other.location;
+			same = same && actualSpeed == other.actualSpeed;	
+		}
+		return same;
+	}
+	
 }
 
 

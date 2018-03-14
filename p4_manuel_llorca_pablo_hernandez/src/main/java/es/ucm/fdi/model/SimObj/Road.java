@@ -415,4 +415,18 @@ public class Road extends SimObject {
 	public Junction getToJunction() {
 		return toJunction;
 	}
+	
+	public boolean equals(Object obj){
+		boolean same;
+		same = super.equals(obj);
+		if(same){
+			Road other = (Road) obj;
+			same = same && length == other.length;
+			same = same && speedLimit == other.speedLimit;
+			same = same && fromJunction.equals(other.fromJunction);
+			same = same && toJunction.equals(other.toJunction);
+		}
+		return same;
+	}
+	
 }
