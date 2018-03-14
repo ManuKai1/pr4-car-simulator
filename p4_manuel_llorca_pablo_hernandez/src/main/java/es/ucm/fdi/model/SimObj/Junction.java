@@ -29,9 +29,8 @@ public class Junction extends SimObject {
 		// Listas vacías.
 		incomingRoads = new ArrayList<>();
 		exitRoads = new ArrayList<>();
-		// Semáforo en verde para la primera carretera entrante.
-		light = 0;
-		incomingRoads.get(light).setLight(true);
+		// Todos los semáforos en rojo al principio.
+		light = -1;
 	}
 
 	/**
@@ -46,26 +45,31 @@ public class Junction extends SimObject {
 		// abierto avanza si no está averiado.
 
 		// Carretera con el semáforo en verde.
-		Road greenRoad = incomingRoads.get(light);
+		if (light != -1) {
+			Road greenRoad = incomingRoads.get(light);
 
-		if ( ! greenRoad.noVehiclesWaiting() ) {
-			// El vehículo cruza si no está averiado.
-			try {
-				greenRoad.moveWaitingVehicles();
+			if ( ! greenRoad.noVehiclesWaiting() ) {
+				// El vehículo cruza si no está averiado.
+				try {
+					greenRoad.moveWaitingVehicles();
+				}
+				catch (SimulationException e) {
+					System.err.println( e.getMessage() );
+				}
 			}
-			catch (SimulationException e) {
-				// System.err.println( e.getMessage() );
-			}
+
+			// 2 //
+			// Se actualiza el indicador resp. de la carretera.
+			greenRoad.setLight(false);
+			
+			// 3 //
+			// Se reduce el tiempo de avería de los vehículos en la cola de espera.
+			greenRoad.refreshWaiting();
 		}
-
-		// 2 //
-		// Se actualiza el semáforo del cruce (y el indicador resp. de la carretera).
-		greenRoad.setLight(false);
-		lightAdvance();
-
-		// 3 //
-		// Se reduce el tiempo de avería de los vehículos en la cola de espera.
-		greenRoad.refreshWaiting();
+		
+		// 4 //
+		// Se actualiza el semáforo del cruce.
+		lightAdvance();		
 	}
 	
 	/**
@@ -103,8 +107,11 @@ public class Junction extends SimObject {
 			report.append(",");
 		}
 
-		//Borrado de última coma
-		report.deleteCharAt(report.length() - 1);
+		// Borrado de última coma
+		if (report.length() > 0) {
+			report.deleteCharAt(report.length() - 1);
+		}
+		
 
 		return report.toString();
 	}
@@ -117,7 +124,7 @@ public class Junction extends SimObject {
 	public IniSection generateIniSection(int simTime){
 		String tag = REPORT_TITLE;
 		//Creación de etiqueta (sin corchetes)
-		tag = (String) tag.subSequence(1, tag.length() - 2);
+		tag = (String) tag.subSequence(1, tag.length() - 1);
 		IniSection section = new IniSection(tag);
 		section.setValue("id", id);
 		section.setValue("time", simTime);
@@ -127,8 +134,14 @@ public class Junction extends SimObject {
 			queues.append(incR.getWaitingState());
 			queues.append(",");
 		}
-		//Borrado de última coma
-		queues.deleteCharAt(queues.length() - 1);
+		
+		// Borrado de última coma
+		if (queues.length() > 0) {
+			queues.deleteCharAt(queues.length() - 1);
+			// En caso contrario, queues es vacío y produciría
+			// una OutOfBoundsException.
+		}
+		
 		section.setValue("queues", queues.toString());
 		return section;
 	}
@@ -139,6 +152,13 @@ public class Junction extends SimObject {
 	 */
 	public ArrayList<Road> getIncomingRoads() {
 		return incomingRoads;
+	}
+	
+	/**
+	 * Comprueba si el cruce tiene carreteras entrantes.
+	 */
+	public boolean hasIncomingRoads() {
+		return (incomingRoads.size() > 0);
 	}
 
 	/**

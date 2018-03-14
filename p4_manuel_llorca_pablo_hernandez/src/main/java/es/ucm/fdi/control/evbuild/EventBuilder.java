@@ -16,7 +16,7 @@ public abstract class EventBuilder {
 	abstract Event parse(IniSection ini);
 	
 	 static boolean validID(String id){
-		return Pattern.matches("\\w", id);
+		return Pattern.matches("\\w+", id);
 	}
 	
 }

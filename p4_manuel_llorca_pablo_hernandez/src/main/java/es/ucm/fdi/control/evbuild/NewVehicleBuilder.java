@@ -1,13 +1,9 @@
 package es.ucm.fdi.control.evbuild;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.regex.Pattern;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
-import es.ucm.fdi.model.events.NewJunction;
 import es.ucm.fdi.model.events.NewVehicle;
 
 public class NewVehicleBuilder extends EventBuilder{

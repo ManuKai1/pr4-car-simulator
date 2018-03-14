@@ -31,6 +31,14 @@ public class TrafficSimulation {
 	 * Tiempo actual de la simulación.
 	 */
 	private int time;
+
+	public TrafficSimulation() {
+		// Listas vacías. 
+		events = new MultiTreeMap<>();
+		roadMap = new RoadMap();
+		// Tiempo inicial a 0
+		time = 0;
+	}
 	
 	/**
 	 * Añade un evento al mapa de eventos de la simulación, comprobando
@@ -38,7 +46,7 @@ public class TrafficSimulation {
 	 * @param e evento a añadir
 	 * @throws SimulationException if event time lower thar sim time
 	 */
-	public void pushEvent(Event e)throws SimulationException {
+	public void pushEvent(Event e) throws SimulationException {
 		// Comprueba el tiempo.
 		if( e.getTime() < time ) {
 			throw new SimulationException("Event time is lower than current time.");
@@ -58,14 +66,16 @@ public class TrafficSimulation {
 		int timeLimit = time + steps - 1;
 		while (time <= timeLimit) {
 			// Se ejecutan los eventos correspondientes a ese tiempo.
-			for ( Event event : events.get(time) ) {
-				try {
-					event.execute(this);
+			if ( events.get(time) != null ) {
+				for ( Event event : events.get(time) ) {
+					try {
+						event.execute(this);
+					}
+					catch (SimulationException e1) {
+						System.err.println( e1.getMessage() );
+					}				
 				}
-				catch (SimulationException e1) {
-					// System.err.println( e1.getMessage() );
-				}				
-			}
+			}			
 
 			// Para cada carretera, los coches que no están esperando avanzan.
 			for ( Road road : roadMap.getRoads() ) {
@@ -75,7 +85,9 @@ public class TrafficSimulation {
 			// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
 			// el semáforo y los tiempos de avería de los vehículos a la espera.
 			for ( Junction junction : roadMap.getJunctions() ) {
-				junction.proceed();
+				if ( junction.hasIncomingRoads() ) {
+					junction.proceed();
+				}				
 			}
 
 			// Se avanza un tick.
@@ -98,6 +110,7 @@ public class TrafficSimulation {
 					iniFile.addsection(vehicle.generateIniSection(time));
 				}
 				
+				// Guardado en el outputStream
 				try{
 					iniFile.store(file);
 				}

@@ -29,7 +29,7 @@ public class NewVehicle extends Event {
 				sim.addVehicle( newV );
 			}
 			catch (NonExistingSimObjException e) {
-				// System.err.println( e.getMessage() );
+				System.err.println( e.getMessage() );
 			}
 		}
 		else {

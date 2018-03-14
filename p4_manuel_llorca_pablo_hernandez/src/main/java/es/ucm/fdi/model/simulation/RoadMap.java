@@ -19,6 +19,13 @@ public class RoadMap {
     private ArrayList<Road> roadObjects;
     private ArrayList<Vehicle> vehicleObjects;
 
+
+    public RoadMap() {
+        junctionObjects = new ArrayList<>();
+        roadObjects = new ArrayList<>();
+        vehicleObjects = new ArrayList<>();
+    }
+
     // MÉTODOS
 
     /**

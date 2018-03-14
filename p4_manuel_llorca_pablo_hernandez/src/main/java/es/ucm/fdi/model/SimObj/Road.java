@@ -107,6 +107,14 @@ public class Road extends SimObject {
 
 		// Actualización de cruces afectados.
 		getInOwnJunctions();	
+		
+		// Comprobación de semáforo
+		if (isFirstIncoming()) {
+			isGreen = true;
+		}
+		else {
+			isGreen = false;
+		}
 	}
 
 	/**
@@ -122,11 +130,19 @@ public class Road extends SimObject {
 		int baseSpeed = getBaseSpeed();
 		// Factor de reducción de velocidad en caso de obstáculos delante.
 		int reductionFactor = 1;
+		
+		// * //
+		// Se crea lista con los vehículos en la carretera en ese momento,
+		// pues pueden salir durante su proceed y provocar un error en el foreach
+		ArrayList<Vehicle> onRoad = new ArrayList<>();
+		for (Vehicle v : vehiclesOnRoad) {
+			onRoad.add(v);
+		}
 
 		// 1 //
 		// Se modifica la velocidad a la que avanzarán los vehículos,
 		// teniendo en cuenta el factor de reducción.
-		for (Vehicle v : vehiclesOnRoad) {
+		for (Vehicle v : onRoad) {
 			v.setSpeed( baseSpeed / reductionFactor );
 
 			if (v.getBreakdownTime() > 0) {
@@ -136,7 +152,7 @@ public class Road extends SimObject {
 
 		// 2 //
 		// Los vehículos avanzan y se pueden adelantar.
-		for (Vehicle v : vehiclesOnRoad) {
+		for (Vehicle v : onRoad) {
 			v.proceed();
 		}
 		vehiclesOnRoad.sort(new CompByLocation());
@@ -266,9 +282,13 @@ public class Road extends SimObject {
 
 			state.append("),");
 		}
-
-		// Se quita la última coma.
-		state.deleteCharAt(state.length() - 1);
+		
+		// Borrado de última coma
+		if (state.length() > 0) {
+			state.deleteCharAt(state.length() - 1);
+			// En caso contrario, queues es vacío y produciría
+			// una OutOfBoubdsException.
+		}
 
 		return state;
 	}
@@ -294,7 +314,10 @@ public class Road extends SimObject {
 			for (Vehicle v : waiting) {
 				state.append(v.getID() + ",");
 			}
-			state.setCharAt(state.length(), ']');
+			if (waiting.size() > 0) {
+				state.deleteCharAt(state.length() - 1);
+			}
+			state.append("]");
 		}
 		state.append(")");
 
@@ -309,7 +332,7 @@ public class Road extends SimObject {
 	public IniSection generateIniSection(int simTime){
 		String tag = REPORT_TITLE;
 		//Creación de etiqueta (sin corchetes)
-		tag = (String) tag.subSequence(1, tag.length() - 2);
+		tag = (String) tag.subSequence(1, tag.length() - 1);
 		IniSection section = new IniSection(tag);
 		section.setValue("id", id);
 		section.setValue("time", simTime);
@@ -324,6 +347,15 @@ public class Road extends SimObject {
 	private void getInOwnJunctions() {
 		fromJunction.getExitRoads().add(this);
 		toJunction.getIncomingRoads().add(this);
+	}
+	
+	private boolean isFirstIncoming() {
+		if ( this == toJunction.getIncomingRoads().get(0) ) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**

@@ -38,9 +38,10 @@ public class Vehicle extends SimObject {
 		// Se mete en la primera carretera.
 		try {
 			road = getRoadBetween( trip.get(lastTripPos), trip.get(lastTripPos + 1) );
+			road.pushVehicle(this);
 		}
 		catch (SimulationException e) {
-			// System.err.println( e.getMessage() );
+			System.err.println( e.getMessage() );
 		}
 
 		location = 0;
@@ -81,15 +82,15 @@ public class Vehicle extends SimObject {
 	public void waitInJunction() {
 		// Saca al vehículo de la zona de circulación de la Road
 		road.popVehicle(this);
-		// Localización = longitud de Road
-		location = road.getLength();
-
+		
 		// Cálculo del tiempo de llegada.
 		float arrivalTime = ( actualSpeed / (road.getLength() - location) );
 		// Se mete el Vehicle en la lista de llegados a la cola de espera.
 		// Será introducido en road.waiting una vez que todos hayan llegado.
 		road.arriveToWaiting(this, arrivalTime);	
-
+		
+		// Localización = longitud de Road
+		location = road.getLength();
 		isWaiting = true;
 		actualSpeed = 0;
 	}
@@ -103,21 +104,10 @@ public class Vehicle extends SimObject {
 		int waitingPos = lastTripPos + 1;
 		int nextWaitingPos = waitingPos + 1;
 
-		if ( lastTripPos == 0 ) {
-			// Primera vez. El cruce desde el que se ha entrado a la Road es el primero.
-			try {
-				road = getRoadBetween( trip.get(lastTripPos), trip.get(waitingPos) );
-				road.pushVehicle(this);
-
-				location = 0;
-			} catch (SimulationException e) {
-				// System.err.println( e.getMessage() );
-			}			
-		} 
-		else if ( nextWaitingPos == trip.size() ) {
+		if ( nextWaitingPos == trip.size() ) {
 			// Última vez. El cruce donde se espera es el destino final.
 			hasArrived = true;
-		} 
+		}				 
 		else {
 			// Cambio normal de una Road a otra.
 			try {
@@ -126,10 +116,11 @@ public class Vehicle extends SimObject {
 
 				location = 0;
 			} catch (SimulationException e) {
-				// System.err.println( e.getMessage() );
+				System.err.println( e.getMessage() );
 			}			
 		}
 
+		lastTripPos++;
 		isWaiting = false;
 	}
 
@@ -197,7 +188,7 @@ public class Vehicle extends SimObject {
 		report.append("faulty = " + breakdownTime + '\n');
 		// Localización
 		report.append("location = ");
-		report.append( hasArrived ? "arrived" : "(" + road.getID() + ", " + location + ")");
+		report.append( hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
 
 		return report.toString();
 	}
@@ -210,14 +201,14 @@ public class Vehicle extends SimObject {
 	public IniSection generateIniSection(int simTime){
 		String tag = REPORT_TITLE;
 		//Creación de etiqueta (sin corchetes)
-		tag = (String) tag.subSequence(1, tag.length() - 2);
+		tag = (String) tag.subSequence(1, tag.length() - 1);
 		IniSection section = new IniSection(tag);
 		section.setValue("id", id);
 		section.setValue("time", simTime);
 		section.setValue("speed", actualSpeed);
 		section.setValue("kilometrage", kilometrage);
 		section.setValue("faulty", breakdownTime);
-		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + ", " + location + ")");
+		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
 		return section;
 	}
 	
@@ -236,7 +227,12 @@ public class Vehicle extends SimObject {
 	 * @param roadSpeed velocidad permitida por la carretera
 	 */
 	public void setSpeed(int roadSpeed) {
-		actualSpeed = Math.min(roadSpeed, maxSpeed);
+		if (breakdownTime == 0 ) {
+			actualSpeed = Math.min(roadSpeed, maxSpeed);
+		}
+		else {
+			actualSpeed = 0;
+		}
 	}	
 	
 	/**

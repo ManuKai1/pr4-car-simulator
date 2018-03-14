@@ -1,7 +1,5 @@
 package es.ucm.fdi.control.evbuild;
 
-import java.util.regex.Pattern;
-
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewJunction;

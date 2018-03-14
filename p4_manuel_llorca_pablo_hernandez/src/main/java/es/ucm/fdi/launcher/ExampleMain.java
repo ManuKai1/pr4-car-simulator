@@ -2,6 +2,8 @@ package es.ucm.fdi.launcher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +16,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.ini.Ini;
 
 public class ExampleMain {
@@ -55,23 +58,52 @@ public class ExampleMain {
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
-
 	}
 
+	/**
+	 * Genera y devuelve una colección de opciones posibles de línea
+	 * de comando.
+	 * @return colección de opciones
+	 */
 	private static Options buildOptions() {
+		// Colección
 		Options cmdLineOptions = new Options();
 
-		cmdLineOptions.addOption(Option.builder("h").longOpt("help").desc("Print this message").build());
-		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("Events input file").build());
+		// Comando de ayuda: -h; --help; "Print this message"
 		cmdLineOptions.addOption(
-				Option.builder("o").longOpt("output").hasArg().desc("Output file, where reports are written.").build());
-		cmdLineOptions.addOption(Option.builder("t").longOpt("ticks").hasArg()
-				.desc("Ticks to execute the simulator's main loop (default value is " + _timeLimitDefaultValue + ").")
+			Option.builder("h")
+			.longOpt("help")
+			.desc("Print this message")
+			.build());
+		// Comando de input: -i; --input; <arg.ini>; "Events input file"
+		cmdLineOptions.addOption(
+			Option.builder("i")
+			.longOpt("input")
+			.hasArg()
+			.desc("Events input file")
+			.build());
+		// Comando de salida: -o; --output; <arg.ini>; "Output file, where reports are written"
+		cmdLineOptions.addOption(
+				Option.builder("o")
+				.longOpt("output")
+				.hasArg()
+				.desc("Output file, where reports are written.")
 				.build());
+		// Comando de ticks: -t; --ticks; <x>; "Ticks to execute the simulator's main loop..."
+		cmdLineOptions.addOption(
+			Option.builder("t")
+			.longOpt("ticks")
+			.hasArg()
+			.desc("Ticks to execute the simulator's main loop (default value is " + _timeLimitDefaultValue + ").")
+			.build());
 
 		return cmdLineOptions;
 	}
 
+	/**
+	 * Si el comando tiene la opción de ayuda, se muestra la ayuda de todas las
+	 * opciones disponibles en cmdLineOptions.
+	 */
 	private static void parseHelpOption(CommandLine line, Options cmdLineOptions) {
 		if (line.hasOption("h")) {
 			HelpFormatter formatter = new HelpFormatter();
@@ -80,6 +112,11 @@ public class ExampleMain {
 		}
 	}
 
+	/**
+	 * Actualiza el nombre del fichero de entrada de datos de la clase Main
+	 * con la opción dada en la línea de comando.
+	 * @throws ParseException if there is no events file
+	 */
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
 		if (_inFile == null) {
@@ -87,12 +124,23 @@ public class ExampleMain {
 		}
 	}
 
+	/**
+	 * Actualiza el nombre del fichero de salida de la clase Main
+	 * con la opción dada en la línea de comando.
+	 */
 	private static void parseOutFileOption(CommandLine line) throws ParseException {
 		_outFile = line.getOptionValue("o");
 	}
 
+	/**
+	 * Actualiza el número de pasos indicados por el comando en el
+	 * atributo _timeLimit de Main. Si no hay ninguno, por defecto es 10.
+	 * @throws ParseException if the time value is not valid
+	 */
 	private static void parseStepsOption(CommandLine line) throws ParseException {
+		// Si no se ha introducido ningún valor, se toma el por defecto.
 		String t = line.getOptionValue("t", _timeLimitDefaultValue.toString());
+		// Se comprueba que el valor introducido sea válido.
 		try {
 			_timeLimit = Integer.parseInt(t);
 			assert (_timeLimit < 0);
@@ -125,7 +173,7 @@ public class ExampleMain {
 		});
 
 		for (File file : files) {
-			test(file.getAbsolutePath(), file.getAbsolutePath() + ".out", file.getAbsolutePath() + ".eout",100);
+			test(file.getAbsolutePath(), file.getAbsolutePath() + ".out", file.getAbsolutePath() + ".eout",10);
 		}
 
 	}
@@ -145,10 +193,15 @@ public class ExampleMain {
 	 * 
 	 * @throws IOException
 	 */
-	private static void startBatchMode() throws IOException {
-		// TODO
-		// Add your code here. Note that the input argument where parsed and stored into
-		// corresponding fields.
+	private static void startBatchMode() throws IOException {		
+		// Controlador.
+		Ini iniInput = new Ini(_inFile);
+		File outFile = new File(_outFile);
+		OutputStream os = new FileOutputStream(outFile);
+		Controller control = new Controller(iniInput, os, _timeLimit);
+
+		// Ejecución
+		control.execute();
 	}
 
 	private static void start(String[] args) throws IOException {
@@ -169,10 +222,15 @@ public class ExampleMain {
 
 		// Call test in order to test the simulator on all examples in a directory.
 		//
-	    //	test("resources/examples/events/basic");
+	    	test("src/main/resources/examples/err");
+		//	test(
+		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini", 
+		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini.out",
+		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini.eout",
+		//		10);
 
 		// Call start to start the simulator from command line, etc.
-		start(args);
+		// start(args);
 
 	}
 

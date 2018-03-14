@@ -22,7 +22,7 @@ public class FaultyVehicle extends Event {
 			sim.makeFaulty(vehiclesID, duration);
 		}
 		catch (NonExistingSimObjException e) {
-			// System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 		}
 	}
 }
