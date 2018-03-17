@@ -1,5 +1,6 @@
 package es.ucm.fdi.control.evbuild;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import es.ucm.fdi.ini.IniSection;
@@ -15,8 +16,7 @@ public abstract class EventBuilder {
 	
 	abstract Event parse(IniSection ini);
 	
-	 static boolean validID(String id){
+	static boolean validID(String id){
 		return Pattern.matches("\\w+", id);
 	}
-	
 }

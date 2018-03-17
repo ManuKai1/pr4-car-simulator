@@ -13,6 +13,8 @@ public class EventParser {
 			new FaultyVehicleBuilder(), 
 			new NewJunctionBuilder(), 
 			new NewRoadBuilder(), 
+			new NewHighwayRoadBuilder(),
+			new NewDirtRoadBuilder(),
 			new NewVehicleBuilder(),
 		};
 

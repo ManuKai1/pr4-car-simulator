@@ -9,10 +9,10 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Road extends SimObject {
-	final private String REPORT_TITLE = "[road_report]";
+	protected final String REPORT_TITLE = "[road_report]";
 	
 	private int length;
-	private int speedLimit;
+	protected int speedLimit;
 	private Junction fromJunction;
 	private Junction toJunction;
 
@@ -20,7 +20,7 @@ public class Road extends SimObject {
 	 * Lista de vehículos en la carretera que no están esperando
 	 * en el cruce.
 	 */
-	private ArrayList<Vehicle> vehiclesOnRoad;
+	protected ArrayList<Vehicle> vehiclesOnRoad;
 
 	/**
 	 * Lista temporal reutilizada en cada tick en la que se ordenan
@@ -126,11 +126,6 @@ public class Road extends SimObject {
 	 */
 	@Override
 	public void proceed() {
-		// Velocidad máxima a la que pueden avanzar los vehículos.
-		int baseSpeed = getBaseSpeed();
-		// Factor de reducción de velocidad en caso de obstáculos delante.
-		int reductionFactor = 1;
-		
 		// * //
 		// Se crea lista con los vehículos en la carretera en ese momento,
 		// pues pueden salir durante su proceed y provocar un error en el foreach
@@ -142,13 +137,7 @@ public class Road extends SimObject {
 		// 1 //
 		// Se modifica la velocidad a la que avanzarán los vehículos,
 		// teniendo en cuenta el factor de reducción.
-		for (Vehicle v : onRoad) {
-			v.setSpeed( baseSpeed / reductionFactor );
-
-			if (v.getBreakdownTime() > 0) {
-				reductionFactor = 2;
-			}
-		}
+		vehicleSpeedModifier(onRoad);
 
 		// 2 //
 		// Los vehículos avanzan y se pueden adelantar.
@@ -167,11 +156,33 @@ public class Road extends SimObject {
 	 * de velocidad y la velocidad que permite la congestión del tráfico en
 	 * la Road.
 	 */
-	public int getBaseSpeed() {
+	protected int getBaseSpeed() {
 		// Cálculo de velocidadBase según la fórmula
 		int congestionSpeed = ( speedLimit / Math.max(vehiclesOnRoad.size(), 1) ) + 1;
 
 		return Math.min(speedLimit, congestionSpeed);
+	}
+
+	/**
+	 * Modifica la velocidad que llevarán los vehículos en la
+	 * carretera previo avance.
+	 */
+	protected void vehicleSpeedModifier(ArrayList<Vehicle> onRoad) {
+		// Velocidad máxima a la que pueden avanzar los vehículos.
+		int baseSpeed = getBaseSpeed();
+		
+		// Factor de reducción de velocidad en caso de obstáculos delante.
+		int reductionFactor = 1;
+
+		// Se modifica la velocidad a la que avanzarán los vehículos,
+		// teniendo en cuenta el factor de reducción.
+		for (Vehicle v : onRoad) {
+			v.setSpeed(baseSpeed / reductionFactor);
+
+			if (v.getBreakdownTime() > 0) {
+				reductionFactor = 2;
+			}
+		}
 	}
 
 	/**

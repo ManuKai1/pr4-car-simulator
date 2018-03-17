@@ -8,11 +8,11 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public class NewRoad extends Event {
 	
-	private String id;
-	private int length;
-	private int speedLimit;
-	private String fromJunctionID;
-	private String toJunctionID;	
+	protected String id;
+	protected int length;
+	protected int speedLimit;
+	protected String fromJunctionID;
+	protected String toJunctionID;	
 
 	public NewRoad(int newTime, String ID, int lgth, int lim, String fromID, String toID) {
 		super(newTime);
@@ -39,7 +39,11 @@ public class NewRoad extends Event {
 
 	}
 
-	private Road newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
+	/**
+	 * Devuelve una instancia de carretera genérica con los atributos
+	 * del evento.
+	 */
+	protected Road newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
 		Junction fromJunction, toJunction;
 		fromJunction = sim.getJunction(fromJunctionID);
 		toJunction = sim.getJunction(toJunctionID);

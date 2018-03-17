@@ -13,7 +13,13 @@ public class NewRoadBuilder extends EventBuilder{
 	
 	@Override
 	Event parse(IniSection ini) {
-		if(ini.getTag().equals(iniName)){
+		boolean match = false;
+
+		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(null) ) {
+			match = true;
+		}
+
+		if(match) {
 			String id = ini.getValue("id");
 			int time = 0;
 			int maxSpeed;
@@ -74,6 +80,10 @@ public class NewRoadBuilder extends EventBuilder{
 			if(length <= 0){
 				throw new IllegalArgumentException("Non-positive length in road with ID: " + id);
 			}
+
+			// Tipo de carretera.
+			String type = ini.getValue("type");
+			
 			
 			NewRoad road = new NewRoad(time, id, length, maxSpeed, src, dest);
 			return road;

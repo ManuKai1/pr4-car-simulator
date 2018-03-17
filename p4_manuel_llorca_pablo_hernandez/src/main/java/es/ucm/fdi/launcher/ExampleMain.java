@@ -222,12 +222,12 @@ public class ExampleMain {
 
 		// Call test in order to test the simulator on all examples in a directory.
 		//
-	    	test("src/main/resources/examples/err");
-		//	test(
-		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini", 
-		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini.out",
-		//		"src/main/resources/examples/basic/09_crossRoadTwoVehicles.ini.eout",
-		//		10);
+		// test("src/main/resources/examples/err");
+			test(
+				"src/main/resources/examples/advanced/13_lanesRoad.ini", 
+				"src/main/resources/examples/advanced/13_lanesRoad.ini.out",
+				"src/main/resources/examples/advanced/13_lanesRoad.ini.eout",
+				10);
 
 		// Call start to start the simulator from command line, etc.
 		// start(args);
