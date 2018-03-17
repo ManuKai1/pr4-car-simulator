@@ -91,8 +91,6 @@ public class NewHighwayRoadBuilder extends EventBuilder {
                 throw new IllegalArgumentException("Non-positive lanes in road with ID: " + id);
             }
 
-
-
             NewHighwayRoad road = new NewHighwayRoad(time, id, length, maxSpeed, src, dest, lanes);
             return road;
 

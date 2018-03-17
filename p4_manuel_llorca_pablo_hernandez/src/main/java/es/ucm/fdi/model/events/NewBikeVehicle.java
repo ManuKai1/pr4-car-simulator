@@ -2,42 +2,25 @@ package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
 
+import es.ucm.fdi.model.SimObj.BikeVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
+import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
-public class NewVehicle extends Event {
+public class NewBikeVehicle extends NewVehicle {
 
-	protected String id;
-	protected int maxSpeed;
-	protected ArrayList<String> tripID;
-	
-	public NewVehicle(int newTime, String ID, int max, ArrayList<String> junctions) {
-		super(newTime);
-		id = ID;
-		maxSpeed = max;
-		tripID = junctions;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public int getMaxSpeed() {
-		return maxSpeed;
-	}
-	
-	public ArrayList<String> getTripID(){
-		return tripID;
+	public NewBikeVehicle(int newTime, String ID, int max,
+			ArrayList<String> junctions) {
+		super(newTime, ID, max, junctions);
 	}
 
-	@Override
-	public void execute(TrafficSimulation sim) throws NonExistingSimObjException, AlreadyExistingSimObjException {
+	public void execute(TrafficSimulation sim) throws NonExistingSimObjException, AlreadyExistingSimObjException{
 		if ( ! sim.existsVehicle(getId()) ) {
 			try {
-				Vehicle newV = newVehicle(sim);
+				BikeVehicle newV = newBikeVehicle(sim);
 				sim.addVehicle( newV );
 			}
 			catch (NonExistingSimObjException e) {
@@ -49,7 +32,13 @@ public class NewVehicle extends Event {
 		}
 	}
 	
-	private Vehicle newVehicle(TrafficSimulation sim) throws NonExistingSimObjException {
+	/**
+	 * Función que genera una bicicleta a partir de sus datos
+	 * @param sim Simulador
+	 * @return BikeVehicle con los datos del Event
+	 * @throws NonExistingSimObjException
+	 */
+	private BikeVehicle newBikeVehicle(TrafficSimulation sim) throws NonExistingSimObjException {
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
 		// Deben existir todos los cruces del itinerario en el momento del evento.
@@ -62,19 +51,7 @@ public class NewVehicle extends Event {
 				throw new NonExistingSimObjException("Junction with id: " + jID + " from itinerary of vehicle with id: " + getId() + " not found in simulation.");
 			}
 		}
-		return new Vehicle(getId(), trip, maxSpeed);
-	}
-
-	public boolean equals(Object obj){
-		boolean same;
-		same = super.equals(obj);
-		if(same){
-			NewVehicle other = (NewVehicle) obj;
-			same = same && getId() == other.getId();
-			same = same && maxSpeed == other.maxSpeed;
-			same = same && tripID.equals(other.tripID);
-		}
-		return same;
+		return new BikeVehicle(getId(), trip, maxSpeed);
 	}
 	
 }

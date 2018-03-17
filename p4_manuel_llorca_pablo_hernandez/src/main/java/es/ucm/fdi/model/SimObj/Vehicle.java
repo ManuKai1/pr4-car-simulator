@@ -7,20 +7,20 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Vehicle extends SimObject {
-	private final String REPORT_TITLE = "[vehicle_report]";
+	protected final String REPORT_TITLE = "[vehicle_report]";
 	
-	private ArrayList<Junction> trip;
-	private int lastTripPos;
-	private int maxSpeed;
-	private int kilometrage;
-	private int breakdownTime;
+	protected ArrayList<Junction> trip;
+	protected int lastTripPos;
+	protected int maxSpeed;
+	protected int kilometrage;
+	protected int breakdownTime;
 
-	private boolean hasArrived;
-	private boolean isWaiting;
+	protected boolean hasArrived;
+	protected boolean isWaiting;
 
-	private Road road;
-	private int location;
-	private int actualSpeed;	
+	protected Road road;
+	protected int location;
+	protected int actualSpeed;	
 
 	public Vehicle(String identifier, ArrayList<Junction> trp, int max) {
 		super(identifier);
@@ -261,6 +261,13 @@ public class Vehicle extends SimObject {
 	 */
 	public int getLocation() {
 		return location;
+	}
+	
+	/**
+	 * @returns true if vehicle is faulty
+	 */
+	public boolean isFaulty(){
+		return breakdownTime > 0;
 	}
 	
 	public boolean equals(Object obj){

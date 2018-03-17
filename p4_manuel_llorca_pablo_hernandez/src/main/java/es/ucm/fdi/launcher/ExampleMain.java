@@ -224,10 +224,7 @@ public class ExampleMain {
 		//
 		// test("src/main/resources/examples/err");
 			test(
-				"src/main/resources/examples/advanced/13_lanesRoad.ini", 
-				"src/main/resources/examples/advanced/13_lanesRoad.ini.out",
-				"src/main/resources/examples/advanced/13_lanesRoad.ini.eout",
-				10);
+				"src/main/resources/examples/basic");
 
 		// Call start to start the simulator from command line, etc.
 		// start(args);

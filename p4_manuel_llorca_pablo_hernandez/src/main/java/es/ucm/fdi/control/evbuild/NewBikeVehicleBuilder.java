@@ -4,17 +4,18 @@ import java.util.ArrayList;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.events.NewBikeVehicle;
 import es.ucm.fdi.model.events.NewVehicle;
 
-public class NewVehicleBuilder extends EventBuilder{
-
-	public NewVehicleBuilder(){
+public class NewBikeVehicleBuilder extends EventBuilder {
+	
+	public NewBikeVehicleBuilder(){
 		super("new_vehicle");
 	}
 	
 	@Override
 	Event parse(IniSection ini) {
-		if(ini.getTag().equals(iniName) && ini.getValue("type") == null){
+		if(ini.getTag().equals(iniName) && ini.getValue("type").equals("bike")){
 			String id = ini.getValue("id");
 			int time = 0;
 			int maxSpeed;
@@ -66,10 +67,10 @@ public class NewVehicleBuilder extends EventBuilder{
 				throw new IllegalArgumentException("Less than two junctions in vehicle with ID: " + id);
 			}
 			
-			NewVehicle vehicle = new NewVehicle(time, id, maxSpeed, trip);
+			NewBikeVehicle vehicle = new NewBikeVehicle(time, id, maxSpeed, trip);
 			return vehicle;
 		}
 		else return null;
 	}
-
+	
 }

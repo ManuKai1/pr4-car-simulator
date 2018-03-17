@@ -1,7 +1,6 @@
 package es.ucm.fdi.model.events;
 
 import es.ucm.fdi.model.SimObj.Junction;
-import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.HighwayRoad;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;

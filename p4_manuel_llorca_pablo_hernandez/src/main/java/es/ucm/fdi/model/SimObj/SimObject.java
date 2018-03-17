@@ -1,7 +1,5 @@
 package es.ucm.fdi.model.SimObj;
 
-import es.ucm.fdi.model.events.Event;
-
 
 //Clase padre del resto de: Vehicle, Road, Junction.
 public abstract class SimObject { 

@@ -1,6 +1,5 @@
 package es.ucm.fdi.model.events;
 
-import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
