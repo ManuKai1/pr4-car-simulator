@@ -221,8 +221,9 @@ public class ExampleMain {
 
 		// Call test in order to test the simulator on all examples in a directory.
 		//
-		// test("src/main/resources/examples/err");
 		test("src/main/resources/examples/basic");
+		test("src/main/resources/examples/advanced");
+		test("src/main/resources/examples/err");
 
 		// Call start to start the simulator from command line, etc.
 		// start(args);

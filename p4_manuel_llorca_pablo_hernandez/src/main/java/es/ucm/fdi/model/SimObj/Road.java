@@ -15,6 +15,13 @@ public class Road extends SimObject {
 	protected int speedLimit;
 	private Junction fromJunction;
 	private Junction toJunction;
+	
+	/**
+	 * Lista de vehículos ordenada por orden de entrada en la carretera.
+	 * Utilizada para el caso en que dos vehículos se encuentran en la
+	 * misma posición.
+	 */
+	private static ArrayDeque<Vehicle> entryRecord;
 
 	/**
 	 * Lista de vehículos en la carretera que no están esperando
@@ -41,10 +48,30 @@ public class Road extends SimObject {
 	 * para ordenar vehiclesOnRoad tras cada avance de los coches.
 	 */
 	private static class CompByLocation implements Comparator<Vehicle> {
+		
+		public ArrayDeque<Vehicle> entryRecord;
+		
 		@Override
 		public int compare(Vehicle v1, Vehicle v2) {
 			int dist = v2.getLocation() - v1.getLocation();
-			return dist;
+
+			if (dist != 0) {
+				return dist;
+			}
+			else {
+				// Están en la misma posición, se ordena por orden 
+				// de entrada en carretera.
+				for (Vehicle v : Road.entryRecord ) {
+					if (v == v1) {
+						return -1;
+					}
+					if (v == v2) {
+						return 1;
+					}
+				}
+
+				return 2;
+			}
 		}
 
 		// ROADEND - (v1, 80) < (v2, 78) < (v3, 50) < (v4, 20) - ROADBEGIN
@@ -101,6 +128,7 @@ public class Road extends SimObject {
 		toJunction = toJ;
 
 		// Listas vacías
+		entryRecord = new ArrayDeque<>();
 		vehiclesOnRoad = new ArrayList<>();
 		arrivalsToWaiting = new ArrayList<>();
 		waiting = new ArrayDeque<>();
@@ -218,13 +246,17 @@ public class Road extends SimObject {
 	public void moveWaitingVehicles() throws SimulationException {
 		// EXCEPCIÓN: si se llama con semáforo en rojo.
 		if ( isGreen ) {
-			// Saca al primer vehículo que está esperando.
-			Vehicle moving = waiting.pollFirst();
+			// Primer vehículo que está esperando.
+			Vehicle toMove = waiting.getFirst();
 
 			// Si hay algún vehículo y no está averiado.
-			if (moving != null && moving.getBreakdownTime() == 0) {
+			if (toMove != null && toMove.getBreakdownTime() == 0) {
+				// Se le saca de la lista de espera y del registro de entradas. 
+				entryRecord.remove(toMove);
+				waiting.pollFirst();
+
 				// Se mueve a la siguiente carretera.
-				moving.moveToNextRoad();
+				toMove.moveToNextRoad();
 			}
 		}
 		else {
@@ -374,6 +406,10 @@ public class Road extends SimObject {
 	 */
 	public void pushVehicle(Vehicle v) {
 		vehiclesOnRoad.add(v);
+
+		// Se guarda el último de la lista en el registro de entradas,
+		// pues ha sido el último en entrar.
+		entryRecord.add(v);
 	}
 
 	/**
