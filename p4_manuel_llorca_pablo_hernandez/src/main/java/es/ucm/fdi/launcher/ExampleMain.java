@@ -222,6 +222,7 @@ public class ExampleMain {
 		// Call test in order to test the simulator on all examples in a directory.
 		//
 		test("src/main/resources/examples/basic");
+		//Fallan los casos con las junctions avanzadas (esperado)
 		test("src/main/resources/examples/advanced");
 		test("src/main/resources/examples/err");
 
