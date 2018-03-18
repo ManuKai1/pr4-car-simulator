@@ -20,7 +20,7 @@ public class Junction extends SimObject {
 	private ArrayList<Road> exitRoads;
 
 	/**
-	 * Entero que mediante la operación módulo representa el semáforo encendido. Empieza en 0.
+	 * Entero que mediante la operación módulo representa el semáforo encendido.
 	 */
 	private int light;	
 	

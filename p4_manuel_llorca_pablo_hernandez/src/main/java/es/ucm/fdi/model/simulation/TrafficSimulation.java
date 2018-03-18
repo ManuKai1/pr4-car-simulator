@@ -128,7 +128,6 @@ public class TrafficSimulation {
 	 * @param breakDuration duración del tiempo de avería a añadir
 	 */
 	public void makeFaulty(ArrayList<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
-		// O(n^2)
 		for ( String id : vehiclesID ) {
 			Vehicle toBreak = getVehicle(id);
 			if ( toBreak != null ) {

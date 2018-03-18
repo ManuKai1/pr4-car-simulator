@@ -44,7 +44,7 @@ public class Road extends SimObject {
 		@Override
 		public int compare(Vehicle v1, Vehicle v2) {
 			int dist = v2.getLocation() - v1.getLocation();
-			return dist; // ARREGLAR para (dist == 0)
+			return dist;
 		}
 
 		// ROADEND - (v1, 80) < (v2, 78) < (v3, 50) < (v4, 20) - ROADBEGIN
@@ -212,7 +212,7 @@ public class Road extends SimObject {
 	}	
 
 	/**
-	 * Mueve los Vehicle a la espera en un Junction a sus respectivas
+	 * Mueve el primer vehicle a la espera en un Junction a sus respectiva
 	 * Road de salida.
 	 */
 	public void moveWaitingVehicles() throws SimulationException {

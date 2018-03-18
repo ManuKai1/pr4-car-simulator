@@ -218,13 +218,11 @@ public class ExampleMain {
 		// -i resources/examples/events/basic/ex1.ini -t 20
 		// -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
 		// --help
-		//
 
 		// Call test in order to test the simulator on all examples in a directory.
 		//
 		// test("src/main/resources/examples/err");
-			test(
-				"src/main/resources/examples/basic");
+		test("src/main/resources/examples/basic");
 
 		// Call start to start the simulator from command line, etc.
 		// start(args);
