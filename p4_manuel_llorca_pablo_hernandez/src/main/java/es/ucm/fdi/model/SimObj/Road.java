@@ -21,7 +21,7 @@ public class Road extends SimObject {
 	 * Utilizada para el caso en que dos vehículos se encuentran en la
 	 * misma posición.
 	 */
-	private static ArrayDeque<Vehicle> entryRecord;
+	private ArrayDeque<Vehicle> entryRecord;
 
 	/**
 	 * Lista de vehículos en la carretera que no están esperando
@@ -49,8 +49,12 @@ public class Road extends SimObject {
 	 */
 	private static class CompByLocation implements Comparator<Vehicle> {
 		
-		public ArrayDeque<Vehicle> entryRecord;
-		
+		ArrayDeque<Vehicle> entries;		
+
+		public CompByLocation(Road road) {
+			entries = road.getEntryRecord();
+		}
+
 		@Override
 		public int compare(Vehicle v1, Vehicle v2) {
 			int dist = v2.getLocation() - v1.getLocation();
@@ -61,7 +65,7 @@ public class Road extends SimObject {
 			else {
 				// Están en la misma posición, se ordena por orden 
 				// de entrada en carretera.
-				for (Vehicle v : Road.entryRecord ) {
+				for (Vehicle v : entries ) {
 					if (v == v1) {
 						return -1;
 					}
@@ -70,7 +74,8 @@ public class Road extends SimObject {
 					}
 				}
 
-				return 2;
+				// Fallo del programa (no se debería dar)
+				throw new RuntimeException("Vehicles weren´t recorded when entered their road.");
 			}
 		}
 
@@ -172,7 +177,7 @@ public class Road extends SimObject {
 		for (Vehicle v : onRoad) {
 			v.proceed();
 		}
-		vehiclesOnRoad.sort(new CompByLocation());
+		vehiclesOnRoad.sort(new CompByLocation(this));
 
 		// 3 //
 		// Los coches que llegan al final entran por orden en la cola de espera.
@@ -461,6 +466,14 @@ public class Road extends SimObject {
 	 */
 	public Junction getToJunction() {
 		return toJunction;
+	}
+
+	/**
+	 * Devuelve la lista de registro de entrada de 
+	 * los coches que están en la carretera.
+	 */
+	public ArrayDeque<Vehicle> getEntryRecord() {
+		return entryRecord;
 	}
 	
 	public boolean equals(Object obj){
